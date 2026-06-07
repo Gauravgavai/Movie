@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bollywood Next Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(229, 9, 20, 0.18), transparent 24%),
+                linear-gradient(180deg, #040404 0%, #0a0a0d 35%, #101017 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: rgba(8, 8, 10, 0.96);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 24px 18px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            transition: 0.35s ease;
+            z-index: 1200;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: 86px;
+        }
+
+        .sidebar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            color: #e50914;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .brand-text,
+        .sidebar.collapsed .menu-text,
+        .sidebar.collapsed .side-label,
+        .sidebar.collapsed .watchlist-mini p,
+        .sidebar.collapsed .watch-item h4 {
+            display: none;
+        }
+
+        .toggle-side {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-menu a,
+        .sidebar-menu button {
+            text-decoration: none;
+            color: #f1f5f9;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            text-align: left;
+            width: 100%;
+            padding: 14px 14px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu button:hover {
+            background: rgba(229, 9, 20, 0.16);
+            transform: translateX(4px);
+        }
+
+        .side-label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 14px 6px 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .watchlist-mini {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .watch-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .watch-item img {
+            width: 48px;
+            height: 62px;
+            border-radius: 10px;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .watch-item h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .watch-item p {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            background: rgba(8, 8, 10, 0.72);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .topbar-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .mobile-side-btn {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 14px 54px 14px 46px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-wrap input::placeholder {
+            color: #cbd5e1;
+        }
+
+        .search-icon,
+        .voice-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .search-icon {
+            left: 16px;
+            color: #cbd5e1;
+            font-size: 15px;
+        }
+
+        .voice-btn {
+            right: 8px;
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            background: #e50914;
+            color: white;
+            cursor: pointer;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .login-btn,
+        .premium-btn {
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s ease;
+        }
+
+        .login-btn {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .premium-btn {
+            background: #e50914;
+        }
+
+        .profile-wrap {
+            position: relative;
+        }
+
+        .profile-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(135deg, #ef4444, #7c3aed);
+            color: white;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 58px;
+            width: 230px;
+            background: #121218;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 12px;
+            display: none;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .profile-card {
+            padding: 12px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            margin-bottom: 10px;
+        }
+
+        .profile-card h4 {
+            margin-bottom: 4px;
+        }
+
+        .profile-card p {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .profile-dropdown a,
+        .profile-dropdown button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            text-decoration: none;
+            color: white;
+            background: transparent;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .hero {
+            position: relative;
+            min-height: 92vh;
+            overflow: hidden;
+        }
+
+        .slides {
+            position: relative;
+            min-height: 92vh;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: scale(1.04);
+            transition: opacity 1s ease, transform 5s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        .slide-media {
+            position: absolute;
+            inset: 0;
+        }
+
+        .slide-media img,
+        .slide-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 18%;
+        }
+
+        .slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to right, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.48) 55%, rgba(0, 0, 0, 0.86) 100%),
+                linear-gradient(to top, rgba(4, 4, 4, 0.85), transparent 30%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            padding: 110px 28px 80px;
+            width: min(760px, 94%);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 9px 16px;
+            border-radius: 999px;
+            background: rgba(229, 9, 20, 0.16);
+            border: 1px solid rgba(229, 9, 20, 0.36);
+            color: #fecaca;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .hero-content h1 {
+            font-size: 76px;
+            line-height: 1.02;
+            margin-bottom: 18px;
+        }
+
+        .hero-content p {
+            font-size: 17px;
+            color: #d1d5db;
+            line-height: 1.9;
+            margin-bottom: 26px;
+            max-width: 640px;
+        }
+
+        .hero-actions,
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .hero-actions {
+            margin-bottom: 22px;
+        }
+
+        .hero-actions a,
+        .hero-actions button {
+            text-decoration: none;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #e50914;
+            color: white;
+            box-shadow: 0 12px 28px rgba(229, 9, 20, 0.28);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .btn-watchlist {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .hero-stats span {
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+        }
+
+        .dots {
+            position: absolute;
+            left: 28px;
+            bottom: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.32);
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .dot.active {
+            width: 34px;
+            border-radius: 999px;
+            background: #e50914;
+        }
+
+        .section {
+            padding: 34px 28px 10px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            font-size: 30px;
+        }
+
+        .section-header a {
+            color: #f87171;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .rail-wrap {
+            position: relative;
+        }
+
+        .rail {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            padding-bottom: 6px;
+        }
+
+        .rail::-webkit-scrollbar {
+            display: none;
+        }
+
+        .rail-btn {
+            position: absolute;
+            top: 42%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.76);
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s ease;
+        }
+
+        .rail-btn:hover {
+            background: #e50914;
+            transform: translateY(-50%) scale(1.06);
+        }
+
+        .rail-btn.left {
+            left: -6px;
+        }
+
+        .rail-btn.right {
+            right: -6px;
+        }
+
+        .poster-card {
+            position: relative;
+            min-width: 240px;
+            height: 360px;
+            border-radius: 24px;
+            overflow: hidden;
+            flex: 0 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #141418;
+            transition: 0.4s ease;
+        }
+
+        .poster-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 26px 58px rgba(0, 0, 0, 0.42);
+        }
+
+        .poster-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: 0.45s ease;
+        }
+
+        .poster-card:hover img {
+            transform: scale(1.06);
+            filter: brightness(0.58);
+        }
+
+        .poster-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5, 5, 5, 0.97), rgba(5, 5, 5, 0.14));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 18px;
+        }
+
+        .poster-overlay h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .poster-overlay p {
+            color: #d1d5db;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 14px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: 0.35s ease;
+        }
+
+        .poster-card:hover .poster-overlay p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(18px);
+            transition: 0.35s ease;
+        }
+
+        .poster-card:hover .card-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-actions a,
+        .card-actions button {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: 0.3s ease;
+        }
+
+        .mini-red {
+            background: #e50914;
+            color: white;
+        }
+
+        .mini-dark {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .watch-btn.active {
+            background: #16a34a;
+            color: white;
+        }
+
+        .feature-panel {
+            padding: 34px 28px 70px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 22px;
+        }
+
+        .feature-main,
+        .feature-side article {
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .feature-main {
+            min-height: 460px;
+            display: flex;
+            align-items: end;
+            padding: 28px;
+        }
+
+        .feature-main::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to top, rgba(8, 8, 8, 0.94), rgba(8, 8, 8, 0.18)),
+                url("animal.jpeg") center 18%/cover no-repeat;
+            z-index: 0;
+            transition: 0.5s ease;
+        }
+
+        .feature-main-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-main h2 {
+            font-size: 44px;
+            margin-bottom: 12px;
+        }
+
+        .feature-main p {
+            color: #d1d5db;
+            line-height: 1.9;
+            margin-bottom: 18px;
+            max-width: 650px;
+        }
+
+        .feature-side {
+            display: grid;
+            gap: 22px;
+        }
+
+        .feature-side article {
+            padding: 24px;
+            transition: 0.35s ease;
+        }
+
+        .feature-side h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .feature-side p {
+            color: #cbd5e1;
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badges span {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: 0.8s ease;
+        }
+
+        .reveal.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal-overlay,
+        .trailer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.74);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show,
+        .trailer-overlay.show {
+            display: flex;
+        }
+
+        .login-modal {
+            width: min(430px, 100%);
+            background: linear-gradient(180deg, #111 0%, #1a1a1f 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.35s ease;
+        }
+
+        .login-modal h2 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .login-modal p {
+            color: #cbd5e1;
+            margin-bottom: 18px;
+            line-height: 1.8;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 14px 15px;
+            margin-bottom: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            outline: none;
+        }
+
+        .login-submit,
+        .close-btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .login-submit {
+            background: #e50914;
+            color: white;
+            margin-top: 4px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .trailer-box {
+            width: min(920px, 100%);
+            background: #0d0d12;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.35s ease;
+        }
+
+        .trailer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .trailer-box video {
+            width: 100%;
+            height: 520px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .trailer-close {
+            border: none;
+            background: #e50914;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .footer {
+            text-align: center;
+            color: #6b7280;
+            padding: 0 20px 34px;
+            font-size: 14px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .feature-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 56px;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .mobile-side-btn {
+                display: inline-block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 14px 16px;
+            }
+
+            .section,
+            .feature-panel,
+            .hero-content {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .hero-content {
+                padding-top: 100px;
+                padding-bottom: 90px;
+            }
+
+            .hero-content h1 {
+                font-size: 38px;
+            }
+
+            .poster-card {
+                min-width: 200px;
+                height: 310px;
+            }
+
+            .rail-btn {
+                display: none;
+            }
+
+            .trailer-box video {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="brand"><span class="brand-text">Bollywood</span></div>
+                <button class="toggle-side" id="toggleSidebar">☰</button>
+            </div>
+
+            <div class="side-label">Browse</div>
+            <div class="sidebar-menu">
+                <a href="#home"><span>🏠</span><span class="menu-text">Home</span></a>
+                <a href="#trending"><span>🔥</span><span class="menu-text">Trending</span></a>
+                <a href="#popular"><span>🎬</span><span class="menu-text">Popular</span></a>
+                <a href="#featured"><span>⭐</span><span class="menu-text">Featured</span></a>
+                <button id="openLoginSide"><span>🔐</span><span class="menu-text">Login</span></button>
+            </div>
+
+            <div class="side-label">Watchlist</div>
+            <div class="watchlist-mini">
+                <div class="watch-item">
+                    <img src="animal.jpeg" alt="Animal">
+                    <div>
+                        <h4>Animal</h4>
+                        <p>Added to list</p>
+                    </div>
+                </div>
+                <div class="watch-item">
+                    <img src="chawa.jpeg" alt="Chaava">
+                    <div>
+                        <h4>Chaava</h4>
+                        <p>Watch later</p>
+                    </div>
+                </div>
+                <div class="watch-item">
+                    <img src="dhurandhar1.jpeg" alt="Dhurandhar">
+                    <div>
+                        <h4>Dhurandhar</h4>
+                        <p>Part 1</p>
+                    </div>
+                </div>
+                <div class="watch-item">
+                    <img src="dhurandhar2.jpeg" alt="Dhurandhar The Revenge">
+                    <div>
+                        <h4>Dhurandhar 2</h4>
+                        <p>Part 2</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-side-btn" id="mobileMenu">☰</button>
+                    <div class="search-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="searchInput" placeholder="Search movies, songs, trailers...">
+                        <button class="voice-btn" title="Voice Search">🎤</button>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <button class="login-btn" id="openLogin">Login</button>
+                    <button class="premium-btn">Go Premium</button>
+                    <div class="profile-wrap">
+                        <button class="profile-btn" id="profileBtn">A</button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-card">
+                                <h4>Akash User</h4>
+                                <p>Premium Member</p>
+                            </div>
+                            <a href="#">My Account</a>
+                            <a href="#">Manage Plan</a>
+                            <a href="#">Downloads</a>
+                            <button>Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="hero" id="home">
+                <div class="slides">
+                    <div class="slide active">
+                        <div class="slide-media">
+                            <video src="videoplayback.mp4" autoplay muted loop playsinline></video>
+                        </div>
+                        <div class="hero-content">
+                            <span class="hero-badge">Now Streaming</span>
+                            <h1>Feel the Rage of Animal</h1>
+                            <p>Ultra OTT homepage with search, sidebar, profile dropdown, watchlist, mini trailer popup
+                                and improved poster face visibility.</p>
+                            <div class="hero-actions">
+                                <a class="btn-primary" href="https://youtu.be/8FkLRUJj-o0?si=9B69PN41tauKJ6h6"
+                                    target="_blank" rel="noopener noreferrer">Watch Trailer</a>
+                                <button class="btn-secondary miniTrailerBtn" data-title="Animal Mini Trailer">Mini
+                                    Trailer</button>
+                                <button class="btn-watchlist watch-btn">+ Watchlist</button>
+                            </div>
+                            <div class="hero-stats">
+                                <span>Action Drama</span>
+                                <span>Hindi</span>
+                                <span>4K UI Theme</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slide">
+                        <div class="slide-media">
+                            <img src="chawa.jpeg" alt="Chaava Hero">
+                        </div>
+                        <div class="hero-content">
+                            <span class="hero-badge">Historical Epic</span>
+                            <h1>Enter the World of Chaava</h1>
+                            <p>Grand visuals, dark premium layout, hover reveals and focused character framing.</p>
+                            <div class="hero-actions">
+                                <a class="btn-primary" href="https://youtu.be/77vRyWNqZjM?si=aeurN-V3Dn8FxjFg"
+                                    target="_blank" rel="noopener noreferrer">Watch Trailer</a>
+                                <button class="btn-secondary miniTrailerBtn" data-title="Chaava Mini Trailer">Mini
+                                    Trailer</button>
+                                <button class="btn-watchlist watch-btn">+ Watchlist</button>
+                            </div>
+                            <div class="hero-stats">
+                                <span>Historical</span>
+                                <span>Hindi</span>
+                                <span>Premium Motion</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slide">
+                        <div class="slide-media">
+                            <img src="dhurandhar1.jpeg" alt="Dhurandhar Hero">
+                        </div>
+                        <div class="hero-content">
+                            <span class="hero-badge">New Spy Thriller</span>
+                            <h1>Dhurandhar – Part 1</h1>
+                            <p>Inspired by the listed 2025 title, this card is added in the same cinematic style as
+                                Animal and Chaava.[web:63][web:66]</p>
+                            <div class="hero-actions">
+                                <a class="btn-primary" href="https://www.youtube.com/watch?v=rZ_e-s6VvR4"
+                                    target="_blank" rel="noopener noreferrer">First Look</a>
+                                <button class="btn-secondary miniTrailerBtn"
+                                    data-title="Dhurandhar Part 1 Mini Trailer">Mini Trailer</button>
+                                <button class="btn-watchlist watch-btn">+ Watchlist</button>
+                            </div>
+                            <div class="hero-stats">
+                                <span>Spy Action</span>
+                                <span>Hindi</span>
+                                <span>2025</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slide">
+                        <div class="slide-media">
+                            <img src="dhurandhar2.jpeg" alt="Dhurandhar The Revenge Hero">
+                        </div>
+                        <div class="hero-content">
+                            <span class="hero-badge">Sequel Drop</span>
+                            <h1>Dhurandhar: The Revenge</h1>
+                            <p>Search results also reference a sequel releasing in 2026, so it is included here as Part
+                                2 styling content.[web:68][web:71]</p>
+                            <div class="hero-actions">
+                                <a class="btn-primary" href="https://www.youtube.com/watch?v=NHk7scrb_9I"
+                                    target="_blank" rel="noopener noreferrer">Watch Trailer</a>
+                                <button class="btn-secondary miniTrailerBtn"
+                                    data-title="Dhurandhar Part 2 Mini Trailer">Mini Trailer</button>
+                                <button class="btn-watchlist watch-btn">+ Watchlist</button>
+                            </div>
+                            <div class="hero-stats">
+                                <span>Action Thriller</span>
+                                <span>Hindi</span>
+                                <span>2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </section>
+
+            <section class="section reveal" id="trending">
+                <div class="section-header">
+                    <h2>Trending Now</h2>
+                    <a href="#">View All</a>
+                </div>
+
+                <div class="rail-wrap">
+                    <button class="rail-btn left" onclick="scrollRail('rail1', -320)">‹</button>
+                    <div class="rail" id="rail1">
+                        <article class="poster-card searchable" data-title="Animal">
+                            <img src="animal.jpeg" alt="Animal">
+                            <div class="poster-overlay">
+                                <h3>Animal</h3>
+                                <p>Dark action storytelling with better face-focused crop.</p>
+                                <div class="card-actions">
+                                    <a href="https://youtu.be/8FkLRUJj-o0?si=9B69PN41tauKJ6h6" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">Trailer</a>
+                                    <button class="mini-dark miniTrailerBtn" data-title="Animal Mini Trailer">Mini
+                                        Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Chaava">
+                            <img src="chawa.jpeg" alt="Chaava">
+                            <div class="poster-overlay">
+                                <h3>Chaava</h3>
+                                <p>Historical action scale with premium OTT interactions.</p>
+                                <div class="card-actions">
+                                    <a href="https://youtu.be/77vRyWNqZjM?si=aeurN-V3Dn8FxjFg" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">Trailer</a>
+                                    <button class="mini-dark miniTrailerBtn" data-title="Chaava Mini Trailer">Mini
+                                        Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Dhurandhar">
+                            <img src="dhurandhar1.jpeg" alt="Dhurandhar">
+                            <div class="poster-overlay">
+                                <h3>Dhurandhar</h3>
+                                <p>Added as 2025 Part 1 inspired by search references for the title.[web:63][web:66]</p>
+                                <div class="card-actions">
+                                    <a href="https://www.youtube.com/watch?v=rZ_e-s6VvR4" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">First Look</a>
+                                    <button class="mini-dark miniTrailerBtn"
+                                        data-title="Dhurandhar Part 1 Mini Trailer">Mini Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Dhurandhar The Revenge">
+                            <img src="dhurandhar2.jpeg" alt="Dhurandhar The Revenge">
+                            <div class="poster-overlay">
+                                <h3>Dhurandhar 2</h3>
+                                <p>Added as sequel-style Part 2 card based on 2026 references.[web:68][web:71]</p>
+                                <div class="card-actions">
+                                    <a href="https://www.youtube.com/watch?v=NHk7scrb_9I" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">Trailer</a>
+                                    <button class="mini-dark miniTrailerBtn"
+                                        data-title="Dhurandhar Part 2 Mini Trailer">Mini Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <button class="rail-btn right" onclick="scrollRail('rail1', 320)">›</button>
+                </div>
+            </section>
+
+            <section class="section reveal" id="popular">
+                <div class="section-header">
+                    <h2>Popular Picks</h2>
+                    <a href="#">Explore More</a>
+                </div>
+
+                <div class="rail-wrap">
+                    <button class="rail-btn left" onclick="scrollRail('rail2', -320)">‹</button>
+                    <div class="rail" id="rail2">
+                        <article class="poster-card searchable" data-title="Royal Battle">
+                            <img src="chawa.jpeg" alt="Royal Battle">
+                            <div class="poster-overlay">
+                                <h3>Royal Battle</h3>
+                                <p>Improved framing keeps faces more visible.</p>
+                                <div class="card-actions">
+                                    <a href="#" class="mini-red">Watch</a>
+                                    <button class="mini-dark miniTrailerBtn" data-title="Royal Battle Mini Trailer">Mini
+                                        Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Wild Legacy">
+                            <img src="animal.jpeg" alt="Wild Legacy">
+                            <div class="poster-overlay">
+                                <h3>Wild Legacy</h3>
+                                <p>Expandable card with dark cinematic treatment.</p>
+                                <div class="card-actions">
+                                    <a href="#" class="mini-red">Watch</a>
+                                    <button class="mini-dark miniTrailerBtn" data-title="Wild Legacy Mini Trailer">Mini
+                                        Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Dhurandhar Part 1">
+                            <img src="dhurandhar1.jpeg" alt="Dhurandhar Part 1">
+                            <div class="poster-overlay">
+                                <h3>Dhurandhar Part 1</h3>
+                                <p>Ranveer Singh-led title references surfaced in results for 2025.[web:63][web:67]</p>
+                                <div class="card-actions">
+                                    <a href="https://www.youtube.com/watch?v=rZ_e-s6VvR4" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">Watch</a>
+                                    <button class="mini-dark miniTrailerBtn"
+                                        data-title="Dhurandhar Part 1 Mini Trailer">Mini Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="poster-card searchable" data-title="Dhurandhar Part 2">
+                            <img src="dhurandhar2.jpeg" alt="Dhurandhar Part 2">
+                            <div class="poster-overlay">
+                                <h3>Dhurandhar Part 2</h3>
+                                <p>The sequel is referenced with a March 19, 2026 release date.[web:68][web:71]</p>
+                                <div class="card-actions">
+                                    <a href="https://www.youtube.com/watch?v=NHk7scrb_9I" class="mini-red"
+                                        target="_blank" rel="noopener noreferrer">Watch</a>
+                                    <button class="mini-dark miniTrailerBtn"
+                                        data-title="Dhurandhar Part 2 Mini Trailer">Mini Popup</button>
+                                    <button class="mini-dark watch-btn">+ List</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <button class="rail-btn right" onclick="scrollRail('rail2', 320)">›</button>
+                </div>
+            </section>
+
+            <section class="feature-panel reveal" id="featured">
+                <div class="feature-main">
+                    <div class="feature-main-content">
+                        <h2>4 Movie Cinematic Universe</h2>
+                        <p>Animal, Chaava, Dhurandhar Part 1 aur Dhurandhar Part 2 ko ek hi OTT-style homepage me
+                            combine kiya gaya hai with smart rails, search, modal preview and watchlist
+                            interactions.[web:63][web:68][web:71]</p>
+                        <div class="hero-actions">
+                            <button class="btn-primary miniTrailerBtn" data-title="Featured Mini Trailer">Play
+                                Preview</button>
+                            <button class="btn-watchlist watch-btn">+ Add to Watchlist</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-side">
+                    <article>
+                        <h3>New Movies Added</h3>
+                        <p>Dhurandhar and Dhurandhar: The Revenge are now added in the same style flow as your earlier
+                            movie cards.[web:63][web:68][web:71]</p>
+                        <div class="badges">
+                            <span>Animal</span>
+                            <span>Chaava</span>
+                            <span>Dhurandhar</span>
+                            <span>Part 2</span>
+                        </div>
+                    </article>
+
+                    <article>
+                        <h3>Poster Fix Active</h3>
+                        <p>Images still use top-focused crop so actor faces stay more visible.</p>
+                        <div class="badges">
+                            <span>object-fit</span>
+                            <span>object-position</span>
+                            <span>Face Visible</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <div class="modal-overlay" id="loginModal">
+                <div class="login-modal">
+                    <h2>Welcome Back</h2>
+                    <p>Login to continue your premium OTT streaming experience.</p>
+                    <input type="email" placeholder="Enter email">
+                    <input type="password" placeholder="Enter password">
+                    <button class="login-submit">Login Now</button>
+                    <button class="close-btn" id="closeLogin">Close</button>
+                </div>
+            </div>
+
+            <div class="trailer-overlay" id="trailerModal">
+                <div class="trailer-box">
+                    <div class="trailer-top">
+                        <h3 id="trailerTitle">Mini Trailer</h3>
+                        <button class="trailer-close" id="closeTrailer">✕</button>
+                    </div>
+                    <video id="miniVideo" controls autoplay muted>
+                        <source src="videoplayback.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <p class="footer">BollyFlix Next Version OTT Experience</p>
+        </main>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        toggleSidebar.addEventListener('click', () => {
+            if (window.innerWidth > 1100) {
+                sidebar.classList.toggle('collapsed');
+            } else {
+                sidebar.classList.toggle('show');
+            }
+        });
+
+        mobileMenu.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        let current = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+                dots[i].classList.toggle('active', i === index);
+            });
+            current = index;
+        }
+
+        setInterval(() => {
+            let next = (current + 1) % slides.length;
+            showSlide(next);
+        }, 5500);
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => showSlide(index));
+        });
+
+        function scrollRail(id, amount) {
+            document.getElementById(id).scrollBy({
+                left: amount,
+                behavior: 'smooth'
+            });
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('show');
+            });
+        }, { threshold: 0.16 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        const openLogin = document.getElementById('openLogin');
+        const openLoginSide = document.getElementById('openLoginSide');
+        const loginModal = document.getElementById('loginModal');
+        const closeLogin = document.getElementById('closeLogin');
+
+        [openLogin, openLoginSide].forEach(btn => {
+            btn.addEventListener('click', () => loginModal.classList.add('show'));
+        });
+
+        closeLogin.addEventListener('click', () => loginModal.classList.remove('show'));
+
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) loginModal.classList.remove('show');
+        });
+
+        const trailerModal = document.getElementById('trailerModal');
+        const closeTrailer = document.getElementById('closeTrailer');
+        const miniVideo = document.getElementById('miniVideo');
+        const trailerTitle = document.getElementById('trailerTitle');
+
+        document.querySelectorAll('.miniTrailerBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                trailerTitle.textContent = btn.dataset.title || 'Mini Trailer';
+                trailerModal.classList.add('show');
+                miniVideo.currentTime = 0;
+                miniVideo.play();
+            });
+        });
+
+        closeTrailer.addEventListener('click', () => {
+            trailerModal.classList.remove('show');
+            miniVideo.pause();
+        });
+
+        trailerModal.addEventListener('click', (e) => {
+            if (e.target === trailerModal) {
+                trailerModal.classList.remove('show');
+                miniVideo.pause();
+            }
+        });
+
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        profileBtn.addEventListener('click', () => {
+            profileDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.searchable');
+
+        searchInput.addEventListener('input', () => {
+            const value = searchInput.value.toLowerCase().trim();
+            cards.forEach(card => {
+                const title = card.dataset.title.toLowerCase();
+                card.style.display = title.includes(value) ? 'block' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.watch-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                if (btn.classList.contains('mini-dark')) {
+                    btn.textContent = btn.classList.contains('active') ? '✓ Added' : '+ List';
+                } else {
+                    btn.textContent = btn.classList.contains('active') ? '✓ Added' : '+ Watchlist';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
